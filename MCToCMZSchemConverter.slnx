@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="MCToCMZSchemConverter/MCToCMZSchemConverter.csproj" Id="650b0457-84e5-4345-ace9-4b9447305743">
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+</Solution>

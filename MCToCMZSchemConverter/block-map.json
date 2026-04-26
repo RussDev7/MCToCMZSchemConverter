@@ -1,0 +1,61 @@
+{
+    // Default CMZ block used when a Minecraft block is not listed below.
+    // "Empty" means unmapped blocks become air.
+    "DefaultBlock": "Empty",
+
+    // Minecraft block -> CastleMinerZ block mappings.
+    //
+    // Left side:
+    //   Minecraft block id, block state, or friendly name.
+    //
+    // Right side:
+    //   A valid CmzBlockType enum name.
+    //
+    // Examples:
+    //   "minecraft:acacia_log": "Log"
+    //   "Acacia Log": "Log"
+    //   "minecraft:twisting_vines": "Leaves"
+    //
+    // The converter normalizes names, so:
+    //   "minecraft:acacia_log"
+    //   "acacia_log"
+    //   "Acacia Log"
+    //
+    // can all match the same block.
+    "Mappings": {
+
+        "minecraft:air": "Empty",
+        "minecraft:cave_air": "Empty",
+        "minecraft:void_air": "Empty",
+        "minecraft:acacia_log": "Log",
+        "Acacia Log": "Log",
+        "minecraft:oak_log": "Log",
+        "minecraft:spruce_log": "Log",
+        "minecraft:birch_log": "Log",
+        "minecraft:jungle_log": "Log",
+        "minecraft:dark_oak_log": "Log",
+        "minecraft:mangrove_log": "Log",
+        "minecraft:cherry_log": "Log",
+        "minecraft:oak_leaves": "Leaves",
+        "minecraft:spruce_leaves": "Leaves",
+        "minecraft:birch_leaves": "Leaves",
+        "minecraft:jungle_leaves": "Leaves",
+        "minecraft:acacia_leaves": "Leaves",
+        "minecraft:dark_oak_leaves": "Leaves",
+        "minecraft:mangrove_leaves": "Leaves",
+        "minecraft:cherry_leaves": "Leaves",
+        "minecraft:twisting_vines": "Leaves",
+        "Twisting Vines": "Leaves",
+        "minecraft:stone": "Rock",
+        "minecraft:cobblestone": "Rock",
+        "minecraft:dirt": "Dirt",
+        "minecraft:grass_block": "Grass",
+        "minecraft:sand": "Sand",
+        "minecraft:snow_block": "Snow",
+        "minecraft:ice": "Ice",
+        "minecraft:glass": "GlassBasic",
+        "minecraft:tnt": "TNT",
+        "minecraft:torch": "Torch",
+        "minecraft:chest": "Crate"
+    }
+}

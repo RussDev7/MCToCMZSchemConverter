@@ -188,6 +188,170 @@ output/house_cmz.schem
 
 ---
 
+## Tools
+
+The `Tools/` folder contains helper scripts for maintaining and updating `block-map.json`.
+
+These tools are not required for normal schematic conversion, but they make it easier to generate Minecraft block id lists and quickly fill large block maps with reasonable CastleMiner Z defaults.
+
+```text
+Tools/
+├── AutoFillBlockMap.ps1
+└── DumpMinecraftBlockIds.bat
+````
+
+---
+
+### DumpMinecraftBlockIds.bat
+
+`DumpMinecraftBlockIds.bat` generates a plain text list of Minecraft block ids from Minecraft's extracted `blockstates` folder.
+
+Minecraft blockstates are stored inside the Minecraft Java Edition client jar at:
+
+```text
+assets/minecraft/blockstates
+```
+
+Each `.json` file in that folder represents one Minecraft block id.
+
+Example:
+
+```text
+acacia_log.json      -> minecraft:acacia_log
+twisting_vines.json  -> minecraft:twisting_vines
+stone.json           -> minecraft:stone
+oak_stairs.json      -> minecraft:oak_stairs
+```
+
+#### Usage
+
+1. Open or extract the Minecraft Java Edition jar you want to support.
+
+Typical jar location:
+
+```text
+%APPDATA%\.minecraft\versions\<version>\<version>.jar
+```
+
+2. Extract this folder from the jar:
+
+```text
+assets\minecraft\blockstates
+```
+
+3. Copy `DumpMinecraftBlockIds.bat` into the extracted `blockstates` folder.
+
+4. Run the batch file.
+
+The script will create:
+
+```text
+minecraft-block-ids.txt
+```
+
+containing entries like:
+
+```text
+minecraft:acacia_log
+minecraft:twisting_vines
+minecraft:stone
+minecraft:oak_stairs
+```
+
+#### Notes
+
+Use the newest Minecraft jar when updating the main `block-map.json`.
+
+Use an older jar only if you specifically want to support or compare against an older Minecraft version.
+
+This tool only dumps base block ids. It does not generate every possible block state combination, such as:
+
+```text
+minecraft:oak_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]
+```
+
+---
+
+### AutoFillBlockMap.ps1
+
+`AutoFillBlockMap.ps1` automatically fills blank or existing Minecraft mapping entries with guessed CastleMiner Z block types.
+
+It is useful after generating or expanding `block-map.json` with a large Minecraft block list.
+
+Example input:
+
+```json
+"minecraft:oak_log": "",
+"minecraft:oak_leaves": "",
+"minecraft:stone": "",
+"minecraft:glass": "",
+"minecraft:water": ""
+```
+
+Example output:
+
+```json
+"minecraft:oak_log": "Log",
+"minecraft:oak_leaves": "Leaves",
+"minecraft:stone": "Rock",
+"minecraft:glass": "GlassMystery",
+"minecraft:water": "Empty"
+```
+
+#### Usage
+
+From the folder containing `block-map.json`, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Tools\AutoFillBlockMap.ps1
+```
+
+By default, this reads:
+
+```text
+block-map.json
+```
+
+and writes:
+
+```text
+block-map.autofilled.json
+```
+
+You can also pass custom paths:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Tools\AutoFillBlockMap.ps1 -InputPath ".\block-map.json" -OutputPath ".\block-map.autofilled.json"
+```
+
+#### Important
+
+Review the generated file before replacing your main `block-map.json`.
+
+The auto-fill script uses broad name-matching rules. It is designed to create a fast first pass, not a perfect hand-authored map.
+
+For example:
+
+```text
+minecraft:oak_stairs       -> Wood
+minecraft:deepslate        -> Rock
+minecraft:diamond_ore      -> DiamondOre
+minecraft:redstone_wire    -> Empty
+minecraft:white_bed        -> Empty
+```
+
+Some Minecraft blocks do not have a clean CastleMiner Z equivalent, so they may need manual adjustment.
+
+Recommended workflow:
+
+1. Back up `block-map.json`.
+2. Run `AutoFillBlockMap.ps1`.
+3. Open `block-map.autofilled.json`.
+4. Review important mappings.
+5. Rename it to `block-map.json` when satisfied.
+
+---
+
 ## Block Map
 
 The `block-map.json` file controls how Minecraft blocks are converted into CastleMiner Z blocks.

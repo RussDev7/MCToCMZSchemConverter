@@ -170,6 +170,13 @@ function Get-CmzBlockGuess {
         return "Empty"
     }
 
+    # ----------------------------
+    # Beacons / respawns / conduits
+    # ----------------------------
+    if ($id -match "beacon|respawn_anchor|conduit") {
+        return "SpawnPointBasic"
+    }
+
     # Fallback for anything unknown.
     return "Empty"
 }

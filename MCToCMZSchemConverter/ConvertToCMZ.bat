@@ -20,7 +20,7 @@ set "OUTPUT=%OUTPUT_DIR%\%~n1_cmz.schem"
 REM Create output folder if it does not exist.
 if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
 
-"%EXE%" "%INPUT%" "%OUTPUT%" "%MAP%"
+"%EXE%" "%INPUT%" "%OUTPUT%" "%MAP%" --save-air
 
 echo.
 echo Converted schematic saved to:

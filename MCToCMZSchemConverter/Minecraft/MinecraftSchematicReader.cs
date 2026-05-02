@@ -62,6 +62,21 @@ namespace SchemConverter.Minecraft
 
             int version = schematic.Get<NbtInt>("Version")?.Value ?? 1;
 
+            // Sponge schematics may store a paste offset.
+            // This is the relative offset from the paster to the schematic's minimum corner.
+            // CMZ uses the opposite sign for CopyAnchorOffset, so Program.cs converts it later.
+            int offsetX = 0;
+            int offsetY = 0;
+            int offsetZ = 0;
+
+            NbtIntArray offsetTag = schematic.Get<NbtIntArray>("Offset");
+            if (offsetTag != null && offsetTag.Value != null && offsetTag.Value.Length >= 3)
+            {
+                offsetX = offsetTag.Value[0];
+                offsetY = offsetTag.Value[1];
+                offsetZ = offsetTag.Value[2];
+            }
+
             NbtCompound paletteTag;
             byte[] blockData;
 
@@ -98,6 +113,9 @@ namespace SchemConverter.Minecraft
                 height,
                 length,
                 version,
+                offsetX,
+                offsetY,
+                offsetZ,
                 palette,
                 paletteIds);
         }
@@ -199,6 +217,33 @@ namespace SchemConverter.Minecraft
         public int Version { get; }
 
         /// <summary>
+        /// Minecraft/Sponge paste offset on the X axis.
+        /// </summary>
+        /// <remarks>
+        /// Sponge stores this as the relative offset from the paster to the schematic's minimum corner.
+        /// CMZ stores the opposite concept as CopyAnchorOffset.
+        /// </remarks>
+        public int OffsetX { get; }
+
+        /// <summary>
+        /// Minecraft/Sponge paste offset on the Y axis.
+        /// </summary>
+        /// <remarks>
+        /// Sponge stores this as the relative offset from the paster to the schematic's minimum corner.
+        /// CMZ stores the opposite concept as CopyAnchorOffset.
+        /// </remarks>
+        public int OffsetY { get; }
+
+        /// <summary>
+        /// Minecraft/Sponge paste offset on the Z axis.
+        /// </summary>
+        /// <remarks>
+        /// Sponge stores this as the relative offset from the paster to the schematic's minimum corner.
+        /// CMZ stores the opposite concept as CopyAnchorOffset.
+        /// </remarks>
+        public int OffsetZ { get; }
+
+        /// <summary>
         /// Maps palette ids to Minecraft block names or block states.
         /// </summary>
         /// <remarks>
@@ -229,6 +274,9 @@ namespace SchemConverter.Minecraft
         /// <param name="height">Height of the schematic on the Y axis.</param>
         /// <param name="length">Length of the schematic on the Z axis.</param>
         /// <param name="version">Sponge/WorldEdit schematic version.</param>
+        /// <param name="offsetX">Minecraft/Sponge paste offset on the X axis.</param>
+        /// <param name="offsetY">Minecraft/Sponge paste offset on the Y axis.</param>
+        /// <param name="offsetZ">Minecraft/Sponge paste offset on the Z axis.</param>
         /// <param name="palette">Palette id to Minecraft block name/state map.</param>
         /// <param name="paletteIds">Flat block palette id list.</param>
         public MinecraftSchematic(
@@ -236,6 +284,9 @@ namespace SchemConverter.Minecraft
             int height,
             int length,
             int version,
+            int offsetX,
+            int offsetY,
+            int offsetZ,
             Dictionary<int, string> palette,
             List<int> paletteIds)
         {
@@ -243,6 +294,9 @@ namespace SchemConverter.Minecraft
             Height = height;
             Length = length;
             Version = version;
+            OffsetX = offsetX;
+            OffsetY = offsetY;
+            OffsetZ = offsetZ;
             Palette = palette;
             PaletteIds = paletteIds;
         }

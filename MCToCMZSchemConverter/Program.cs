@@ -32,6 +32,7 @@ namespace SchemConverter
     /// <code>
     /// SchemConverter input.schem output.schem block-map.json
     /// SchemConverter input.schem output.schem block-map.json --save-air
+    /// SchemConverter input.schem output.schem block-map.json --save-air --preserve-origin
     /// </code>
     /// </remarks>
     internal static class Program
@@ -48,6 +49,7 @@ namespace SchemConverter
         /// <item><description><c>args[1]</c>: Output CastleMinerZ <c>.schem</c> path.</description></item>
         /// <item><description><c>args[2]</c>: JSON block map path.</description></item>
         /// <item><description><c>--save-air</c>: Optional switch for writing Empty blocks into the output schematic.</description></item>
+        /// <item><description><c>--preserve-origin</c>: Optional switch for converting the Minecraft/Sponge paste offset into the CMZ copy anchor.</description></item>
         /// </list>
         /// </param>
         /// <returns>
@@ -79,6 +81,7 @@ namespace SchemConverter
                 string blockMapPath = args[2];
 
                 bool saveAir = HasSwitch(args, "--save-air");
+                bool preserveOrigin = HasSwitch(args, "--preserve-origin");
 
                 if (!File.Exists(inputPath))
                     throw new FileNotFoundException("Input schematic was not found.", inputPath);
@@ -117,13 +120,43 @@ namespace SchemConverter
                     outputBlocks.Add(new CmzBlockRecord(x, y, z, cmzBlock));
                 }
 
-                CmzSchematicWriter.Write(outputPath, outputBlocks);
+                float anchorX = 0;
+                float anchorY = 0;
+                float anchorZ = 0;
+
+                if (preserveOrigin)
+                {
+                    // Sponge Offset means:
+                    //   first block position = paster position + offset
+                    //
+                    // CMZ CopyAnchorOffset means:
+                    //   first block position = player position - CopyAnchorOffset
+                    //
+                    // Therefore, CMZ needs the inverse sign of the Sponge offset.
+                    anchorX = -mc.OffsetX;
+                    anchorY = -mc.OffsetY;
+                    anchorZ = -mc.OffsetZ;
+                }
+
+                CmzSchematicWriter.Write(
+                    outputPath,
+                    outputBlocks,
+                    anchorX,
+                    anchorY,
+                    anchorZ);
 
                 Console.WriteLine("Conversion complete.");
                 Console.WriteLine($"Input:  {inputPath}");
                 Console.WriteLine($"Output: {outputPath}");
                 Console.WriteLine($"Size:   {mc.Width} x {mc.Height} x {mc.Length}");
                 Console.WriteLine($"Blocks written: {outputBlocks.Count}");
+                Console.WriteLine($"Preserve origin: {preserveOrigin}");
+
+                if (preserveOrigin)
+                {
+                    Console.WriteLine($"Minecraft Offset: {mc.OffsetX}, {mc.OffsetY}, {mc.OffsetZ}");
+                    Console.WriteLine($"CMZ CopyAnchorOffset: {anchorX}, {anchorY}, {anchorZ}");
+                }
 
                 if (blockMap.UnmappedBlocks.Count > 0)
                 {
@@ -184,10 +217,11 @@ namespace SchemConverter
             Console.WriteLine("Minecraft WorldEdit .schem -> CastleMinerZ WorldEdit .schem converter");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  SchemConverter <input.schem> <output.schem> <block-map.json> [--save-air]");
+            Console.WriteLine("  SchemConverter <input.schem> <output.schem> <block-map.json> [--save-air] [--preserve-origin]");
             Console.WriteLine();
-            Console.WriteLine("Example:");
+            Console.WriteLine("Examples:");
             Console.WriteLine("  SchemConverter house.schem house_cmz.schem block-map.json");
+            Console.WriteLine("  SchemConverter house.schem house_cmz.schem block-map.json --save-air --preserve-origin");
         }
         #endregion
     }

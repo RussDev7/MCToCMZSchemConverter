@@ -118,6 +118,50 @@ Use this when you want the converted schematic to erase blocks during paste.
 
 ---
 
+## Preserve Origin Mode
+
+By default, converted schematics paste from the minimum corner of the schematic.
+
+```bat
+MCToCMZSchemConverter.exe house.schem house_cmz.schem block-map.json
+```
+
+To preserve the Minecraft/Sponge schematic paste offset, use:
+
+```bat
+MCToCMZSchemConverter.exe house.schem house_cmz.schem block-map.json --preserve-origin
+```
+
+This reads the Minecraft/Sponge `Offset` tag and converts it into the CastleMiner Z WorldEdit `CopyAnchorOffset`.
+
+This makes the converted schematic paste closer to how it would paste in Minecraft WorldEdit relative to the point where it was copied.
+
+You can combine it with `--save-air`:
+
+```bat
+MCToCMZSchemConverter.exe house.schem house_cmz.schem block-map.json --save-air --preserve-origin
+```
+
+### Notes
+
+Minecraft/Sponge and CastleMiner Z store this offset in opposite directions.
+
+Minecraft/Sponge:
+
+```text
+first block = paster position + Offset
+```
+
+CastleMiner Z WorldEdit:
+
+```text
+first block = player position - CopyAnchorOffset
+```
+
+So the converter writes the negative of the Minecraft/Sponge offset into the CMZ schematic. house.schem house_cmz.schem block-map.json
+
+---
+
 ## Drag-and-Drop Batch File
 
 Dragging a `.schem` directly onto the `.exe` does not work by default because the converter requires three arguments:

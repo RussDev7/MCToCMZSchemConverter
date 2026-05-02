@@ -73,7 +73,7 @@ MCToCMZSchemConverter/
 ## Usage
 
 ```bat
-MCToCMZSchemConverter.exe <input.schem> <output.schem> <block-map.json>
+MCToCMZSchemConverter.exe <input.schem> <output.schem> <block-map.json> [--save-air] [--preserve-origin]
 ```
 
 Example:
@@ -126,15 +126,13 @@ By default, converted schematics paste from the minimum corner of the schematic.
 MCToCMZSchemConverter.exe house.schem house_cmz.schem block-map.json
 ```
 
-To preserve the Minecraft/Sponge schematic paste offset, use:
+To preserve the Minecraft/Sponge horizontal paste origin, use:
 
 ```bat
 MCToCMZSchemConverter.exe house.schem house_cmz.schem block-map.json --preserve-origin
 ```
 
-This reads the Minecraft/Sponge `Offset` tag and converts it into the CastleMiner Z WorldEdit `CopyAnchorOffset`.
-
-This makes the converted schematic paste closer to how it would paste in Minecraft WorldEdit relative to the point where it was copied.
+This reads the Minecraft/Sponge `Offset` tag and converts the horizontal X/Z offset into the CastleMiner Z WorldEdit `CopyAnchorOffset`.
 
 You can combine it with `--save-air`:
 
@@ -142,23 +140,43 @@ You can combine it with `--save-air`:
 MCToCMZSchemConverter.exe house.schem house_cmz.schem block-map.json --save-air --preserve-origin
 ```
 
+### How origin preservation works
+
+Minecraft/Sponge and CastleMiner Z store paste offsets differently.
+
+For X/Z, the converter writes the negative of the Minecraft/Sponge offset:
+
+```text
+CMZ CopyAnchorOffset.X = -Minecraft Offset.X
+CMZ CopyAnchorOffset.Z = -Minecraft Offset.Z
+```
+
+For Y, the converter intentionally uses:
+
+```text
+CMZ CopyAnchorOffset.Y = 1
+```
+
+This is because CastleMiner Z `/paste` uses the player's body position, which is one block above the block the player is standing on.
+
+Using `1` makes the schematic's local `Y=0` layer paste onto the block under the player.
+
+In practice:
+
+```text
+Stand where you want the bottom/floor layer of the schematic to paste.
+Run /paste.
+```
+
 ### Notes
 
-Minecraft/Sponge and CastleMiner Z store this offset in opposite directions.
-
-Minecraft/Sponge:
+`--preserve-origin` is best understood as:
 
 ```text
-first block = paster position + Offset
+Preserve Minecraft/Sponge horizontal origin, while using CMZ-friendly floor placement for height.
 ```
 
-CastleMiner Z WorldEdit:
-
-```text
-first block = player position - CopyAnchorOffset
-```
-
-So the converter writes the negative of the Minecraft/Sponge offset into the CMZ schematic. house.schem house_cmz.schem block-map.json
+This avoids Minecraft vertical copy offsets placing the schematic too high or too low in CastleMiner Z.
 
 ---
 
@@ -203,7 +221,9 @@ set "OUTPUT=%OUTPUT_DIR%\%~n1_cmz.schem"
 REM Create output folder if it does not exist.
 if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
 
-"%EXE%" "%INPUT%" "%OUTPUT%" "%MAP%"
+REM Add --preserve-origin if you want to convert the Minecraft/Sponge paste offset
+REM into the CMZ WorldEdit copy anchor.
+"%EXE%" "%INPUT%" "%OUTPUT%" "%MAP%" --save-air --preserve-origin
 
 echo.
 echo Converted schematic saved to:

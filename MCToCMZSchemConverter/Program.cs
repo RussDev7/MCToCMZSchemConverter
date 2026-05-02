@@ -126,15 +126,20 @@ namespace SchemConverter
 
                 if (preserveOrigin)
                 {
-                    // Sponge Offset means:
-                    //   first block position = paster position + offset
+                    // X/Z use the inverse Sponge offset so the horizontal Minecraft copy point
+                    // becomes the CMZ paste anchor.
                     //
-                    // CMZ CopyAnchorOffset means:
-                    //   first block position = player position - CopyAnchorOffset
+                    // Y is different for CMZ because /paste uses the player's body location,
+                    // which is one block above the block the player is standing on.
                     //
-                    // Therefore, CMZ needs the inverse sign of the Sponge offset.
+                    // Using Minecraft Offset.Y here can place the schematic too high or too low,
+                    // especially when the Minecraft copy origin was above/below the selected build.
+                    //
+                    // Anchor Y = 1 means:
+                    //   basePosition.Y = playerLoc.Y - 1
+                    // so the schematic's local Y=0 layer lands on the block under the player.
                     anchorX = -mc.OffsetX;
-                    anchorY = -mc.OffsetY;
+                    anchorY = 1;
                     anchorZ = -mc.OffsetZ;
                 }
 

@@ -1,6 +1,8 @@
 # MCToCMZSchemConverter
 
-A C# console tool for converting Minecraft WorldEdit `.schem` files into CastleMiner Z WorldEdit schematics using a customizable JSON block map.
+![MCToCMZSchemConverter Preview](MCToCMZSchemConverter/_Images/Preview.png)
+
+> A C# console tool for converting Minecraft WorldEdit `.schem` files into CastleMiner Z WorldEdit schematics using a customizable JSON block map.
 
 This tool lets you map Minecraft blocks to CastleMiner Z blocks, such as:
 
@@ -63,9 +65,16 @@ MCToCMZSchemConverter/
 │   └── MinecraftSchematicReader.cs
 │
 └── ReferenceAssemblies/
-    ├── fNbt.dll
-    ├── System.Memory.dll
-    └── System.Text.Json.dll
+    ├──fNbt.dll
+    ├──Microsoft.Bcl.AsyncInterfaces.dll
+    ├──System.Buffers.dll
+    ├──System.IO.Pipelines.dll
+    ├──System.Memory.dll
+    ├──System.Numerics.Vectors.dll
+    ├──System.Runtime.CompilerServices.Unsafe.dll
+    ├──System.Text.Encodings.Web.dll
+    ├──System.Text.Json.dll
+    └──System.Threading.Tasks.Extensions.dll
 ```
 
 ---
